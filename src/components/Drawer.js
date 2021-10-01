@@ -1,21 +1,30 @@
-const Drawer = () => {
+
+const Drawer = ({onClose,items = []}) => {
+  
+
+  
+  
+  
     return (
+      <div className="overlay">
         <div className="drawer">
-        <h2 className='mb-30px'>Корзина <img className='removeBtn' src="/img/btn-remove.svg" alt="Remove" /></h2>
+        <h2 className='mb-30px'>Корзина <img className='removeBtn' onClick = {onClose}  src="/img/btn-remove.svg" alt="Remove" /></h2>
         
 
         <div className="items">
-          <div className="cartItem d-flex align-center mb-20">
+          {items.map((obj)=> (
+              <div className="cartItem d-flex align-center mb-20">
 
-            <div style={{ backgroundImage: 'url(/img/sneakers/1.jpg)' }} className="cardItemImg">
-
+              <div style={{ backgroundImage: `url(${obj.imageUrl})` }} className="cardItemImg">
+  
+              </div>
+              <div className="mr-20 flex">
+                <p className='mb-5'>{obj.title}</p>
+                <b>{obj.price} руб.</b>
+              </div>
+              <img className='removeBtn' src="/img/btn-remove.svg" alt="Remove" />
             </div>
-            <div className="mr-20 flex">
-              <p className='mb-5'>Мужские Кроссовки Nike Blazer Mid Suede</p>
-              <b>12 999 руб.</b>
-            </div>
-            <img className='removeBtn' src="/img/btn-remove.svg" alt="Remove" />
-          </div>
+          ))}
         </div>
 
         <div className="cartTotalBlock">
@@ -34,6 +43,7 @@ const Drawer = () => {
         <button className = 'greenButton'>Оформить заказ <img src="img/arrow.svg" alt="arrow" /></button>
         </div>
       </div>
+    </div>
     )
 }
 export default Drawer
