@@ -14,12 +14,13 @@ const Card = ({
     const {isItemAdded} = React.useContext(AppContext)
     const [isFaivorite, setIsFaivorite] = useState(favorited);
     
-    
+    const itemObj = ({id,parentId:id,title,price,imageUrl})    
+
     const onClickPlus = () => {
-      onPlus({id,title,price,imageUrl});
+      onPlus(itemObj);
     }
     const onClickFaivorite = () =>{
-      onFaivorite({id,title,price,imageUrl});
+      onFaivorite(itemObj);
       setIsFaivorite(!isFaivorite);
     }
 
@@ -52,7 +53,7 @@ const Card = ({
             <div className="d-flex flex-column">
               <span>Цена:</span>
               <b>{price} руб.</b>
-            </div>
+            </div>  
             {onPlus && <img
               className={styles.plus}
               onClick={onClickPlus}

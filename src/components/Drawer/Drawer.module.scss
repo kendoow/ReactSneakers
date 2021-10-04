@@ -1,9 +1,4 @@
 
-.bodyVisible {
-    body {
-        overflow: visible;
-    }
-}
 .overlay {
     position: absolute;
     left: 0;
@@ -21,9 +16,7 @@
 .overlayVisible {
     visibility: visible;
     opacity: 1;
-    body {
-        overflow: hidden;
-    }
+    position: fixed;
     
     .drawer {
       transform: translateX(0);
