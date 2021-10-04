@@ -1,12 +1,13 @@
 import React,{useState,useEffect} from "react"
 import axios from 'axios'
 
-import Drawer from "./components/Drawer"
+import Drawer from "./components/Drawer/Drawer"
 import Header from "./components/Header"
 import { Route } from "react-router"  
 import Home from "./pages/Home"
 import Favorites from "./pages/Favorites"
 import AppContext  from "./context"
+import Orders from "./pages/Orders"
 
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
   
   useEffect(() =>{
     async function fetchData () {
+   try {
     const itemsResponse = await axios.get('https://615734fe8f7ea60017985154.mockapi.io/items');  
     const cartResponse = await axios.get('https://615734fe8f7ea60017985154.mockapi.io/cart')
     const favoritesResponse = await axios.get('https://615734fe8f7ea60017985154.mockapi.io/Faivorites')
@@ -32,23 +34,36 @@ const App = () => {
     setFaivorites(favoritesResponse.data)
     setItems(itemsResponse.data)
     }
+     catch (error) {
+     alert ('Ошибка при запросе данных :(')
+   }
+  }
     fetchData()
   }, [])
 
-  const onAddToCart = (obj) => {
-      if(cartItems.find((item) => Number(item.id) === Number(obj.id))){ 
-        axios.delete(`https://615734fe8f7ea60017985154.mockapi.io/cart/${obj.id}`)
-        setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));  
-      } else {
-        axios.post('https://615734fe8f7ea60017985154.mockapi.io/cart',obj);
-        setCartItems((prev) => [...prev,obj]);
+  const onAddToCart = async (obj) => {
+      try {
+        if(cartItems.find((item) => Number(item.id) === Number(obj.id))){ 
+          setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id))); 
+          await axios.delete(`https://615734fe8f7ea60017985154.mockapi.io/cart/${obj.id}`)
+        } else {
+          setCartItems((prev) => [...prev,obj]);
+          await axios.post('https://615734fe8f7ea60017985154.mockapi.io/cart',obj);
+        }
+      }
+        catch (error) {
+        alert ('Не поулчилось добавить в корзину!')
       }
     
   };
 
-  const onRemoveItem = (id) => {
-    axios.delete(`https://615734fe8f7ea60017985154.mockapi.io/cart/${id}`)
-    setCartItems((prev) => prev.filter(item => item.id !== id));  
+  const onRemoveItem = async(id) => {
+    try {
+      setCartItems((prev) => prev.filter(item => item.id !== id));
+      await axios.delete(`https://615734fe8f7ea60017985154.mockapi.io/cart/${id}`)     
+    } catch (error) {
+      alert('Не удалось удалить пару кроссовок!')
+    }  
   }
   
   const onAddToFaivorite = async (obj) => {
@@ -74,9 +89,9 @@ const App = () => {
 
   return (
     
-    <AppContext.Provider value = {{cartItems,faivorites,items,isItemAdded,onAddToFaivorite,setCartOpened,setCartItems}}>
+    <AppContext.Provider value = {{cartItems,faivorites,items,isItemAdded,onAddToFaivorite,setCartOpened,setCartItems,onAddToCart}}>
       <div className="wrapper clear">
-        {cartOpened ? <Drawer items = {cartItems} onRemove = {onRemoveItem} onClose = {() => setCartOpened(false)}/> : null}
+      <Drawer items = {cartItems} onRemove = {onRemoveItem} onClose = {() => setCartOpened(false)} opened = {cartOpened}/>
 
           <Header onClickCart = {() => setCartOpened(true)} />
         
@@ -96,6 +111,10 @@ const App = () => {
 
         <Route path = '/favorites' exact >
           <Favorites />
+        </Route>
+
+        <Route path = '/orders' exact >
+          <Orders />
         </Route>
     </div>
     </AppContext.Provider>

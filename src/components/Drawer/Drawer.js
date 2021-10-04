@@ -1,17 +1,19 @@
 import axios from "axios"
-import { useContext, useState } from "react"
-import AppContext from "../context"
-import Info from "./info"
+import { useState } from "react"
+
+import Info from "../info"
+import { useCart } from "../../hooks/useCart";
+
+import styles from './Drawer.module.scss'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const Drawer = ({onClose,items = [],onRemove}) => {
-  document.body.style.overflow = 'hidden'
-  window.scrollTo(0,0)
-    const {cartItems,setCartItems} = useContext(AppContext)
+const Drawer = ({onClose,items = [],onRemove,opened}) => {
+    const {cartItems,setCartItems,totalPrice} = useCart()
     const [isComplited, setIsComplited] = useState(false)
     const [orderId, setOrderId] = useState(null)
     const [isLodaing, setIsLoading] = useState(false)
+    
 
     const onClickOrder = async () => {
      try {
@@ -24,18 +26,18 @@ const Drawer = ({onClose,items = [],onRemove}) => {
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-        await axios.delete('https://615734fe8f7ea60017985154.mockapi.io/cart' + item.id)
+        await axios.delete('https://615734fe8f7ea60017985154.mockapi.io/cart/' + item.id)
         await delay(1000);
       }
      } catch (error) {
-       alert ('Ошибка при создании заказа')
+       alert('Ошибка при создании заказа :(')
      }
      setIsLoading(false)
     }
     return (
-      <div className="overlay">
-        <div className="drawer">
-        <h2 className='mb-30px'>Корзина <img className='removeBtn' onClick = {onClose}  src="/img/btn-remove.svg" alt="Remove" />
+      <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ''}`}>
+        <div className= {styles.drawer}>
+        <h2 className='mb-30px d-flex justify-between'>Корзина <img className='removeBtn mr-20 cu-p' onClick = {onClose}  src="/img/btn-remove.svg" alt="Remove" />
         </h2>
 
           {
@@ -65,12 +67,12 @@ const Drawer = ({onClose,items = [],onRemove}) => {
              <li className='d-flex'>
                <span>Итого:</span>
                <div></div>
-               <b>21 498 руб. </b>
+               <b>{totalPrice} руб. </b>
              </li>
              <li>
                <span>Налог 5%:</span>
                <div></div>
-               <b>1074 руб.</b>
+               <b>{Math.round(totalPrice *0.05,1)} руб.</b>
              </li>
            </ul>
          <button disabled = {isLodaing} onClick = {onClickOrder} className = 'greenButton'>Оформить заказ <img src="img/arrow.svg" alt="arrow" /></button>
