@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React,{useEffect,useState} from 'react'
 import Card from "../components/Card";
+import EmptyPage from './EmptyPage';
 
 const Orders = () => {
     const [orders, setOrders] = useState([])
@@ -20,21 +21,28 @@ const Orders = () => {
 },[])
 
     return (
-        <div className="content  p-40">
-        <div className='d-flex justify-between align-center mb-40'>
-          <h1>Мои Заказы</h1>         
-        </div>
+            orders.length > 0 ?
+            <div className="content  p-40">
+              <div className='d-flex justify-between align-center mb-40'>
+                <h1>Мои Заказы</h1>         
+              </div>
 
-        <div className="d-flex flex-wrap">
-        {(isLoading ? [...Array(8)] : orders).map((item,index) => (
-            <Card 
-          key={index}
-          loading={isLoading}
-          {...item}
-            />
-          ))} 
-        </div>
-      </div>
+           <div className="d-flex flex-wrap">
+            {isLoading ? [...Array(8)] : orders.map((item,index) => (
+              <Card 
+            key={index}
+            loading={isLoading}
+            {...item}
+            
+              />
+            ))}
+            </div>
+            </div> :
+            <EmptyPage
+              image = '/img/ultraSad.png'
+              title = 'У вас нет заказов'
+              description = 'Оформите заказ на главной странице'
+              />
     );
 }
 export default Orders;
